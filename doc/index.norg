@@ -1,0 +1,26 @@
+@document.meta
+title: 00. Norg Tutorial
+description: Welcome to Norg!
+authors: takuto
+categories: doc
+created: 2024-03-12T00:13:28+0900
+updated: 2024-03-12T05:31:54+0900
+version: 1.1.1
+weight: 0
+@end
+
+* Norg Tutorial
+  *This page is generated from {./norg_tutorial.norg}[`./norg_tutorial.norg`]
+
+  I'd suggest reading {https://github.com/pysan3/Norg-Tutorial/blob/main/norg_tutorial.md}[`./norg_tutorial.md`]
+  first to do the installation and then clone the repo locally to read {:$/doc/20-start-writing:** How to Write Notes}
+  in your neovim with the neorg plugin :)
+
+** Useful Videos
+   - {https://www.youtube.com/watch?v=NnmRVY22Lq8&list=PLx2ksyallYzVI8CN1JMXhEf62j2AijeDa}[From No Org to Neorg - Playlist]
+   -- {https://youtu.be/NnmRVY22Lq8}[From No Org to Neorg - The Basics | #1]
+   -- {https://youtu.be/Bi9JiW5nSig}[From No Org to Neorg - Workflow, Links | #2]
+   -- ...
+
+   I highly recommend you watch these videos by `Vhyrro`, the main contributor of {https://github.com/nvim-neorg/neorg/}[Neorg] plugin.
+   He says he'll start a devlog series soon as well.

@@ -1,0 +1,33 @@
+---
+title: Norg Tutorial
+date: 2020-08-05
+description: Norg tutorial with kickstart configuration.
+layout: page
+eleventyNavigation:
+  key: main
+  title: Tutorial #  as it will appear in the nav
+  order: 2    # order to display in the nav
+seo:
+  title: Norg Tutorial
+  description: Let's get started!
+pagination:
+  data: collections.doc
+  size: 12
+  reverse: false
+  alias: doc
+---
+
+{% set postslist = doc | reverse %}
+
+{# 
+  Allows a user to easily change the Tag List Style.
+  Please see instructions in /src/_data/structure.js >>> ===== Post List Style Options =====
+#}
+{% set postlist = ['components/', structure.postListStyle, '.njk'] %}
+{% include postlist | join %}
+
+{# ===== Paginate based on "size" frontmatter value above =====  #}
+{# Don't even include the pagination component if there are fewer posts than needed to paginate  #}
+{% if collections.doc.length > pagination.size %}
+  {% include "components/pagination.njk" %}
+{% endif %}

@@ -1,0 +1,137 @@
+@document.meta
+title: 30. Neorg Modules
+description: Neorg modules that enhance norg format in neovim.
+authors: takuto.
+categories: doc
+created: 2024-03-12T00:16:11+0900
+updated: 2024-03-12T05:31:55+0900
+version: 1.1.1
+weight: 30
+@end
+
+* Modules
+  Keys passed to `config.load` are name of modules. Their documents can be found in
+  {https://github.com/nvim-neorg/neorg/wiki}[Neorg - Wiki] -> Pages.
+
+  I already mentioned the necessary ones in {:$/doc/10-get-started:** Kickstart Config},
+  but here are ones I personally use on top of them.
+  @code lua
+  local modules = {
+    ... -- ones mentioned in {** Kickstart Config}
+    ["core.esupports.metagen"] = { config = { type = "auto", update_date = true } },
+    ["core.qol.toc"] = {},
+    ["core.qol.todo_items"] = {},
+    ["core.looking-glass"] = {},
+    ["core.presenter"] = { config = { zen_mode = "zen-mode" } },
+    ["core.export"] = {},
+    ["core.export.markdown"] = { config = { extensions = "all" } },
+    ["core.summary"] = {},
+    ["core.tangle"] = { config = { report_on_empty = false } },
+    ["core.ui.calendar"] = {},
+    ["core.journal"] = {
+      config = {
+        strategy = "flat",
+        workspace = "Notes",
+      },
+    },
+  }
+  @end
+
+** Notes for Important Modules
+*** `core.journal`
+    - {https://github.com/nvim-neorg/neorg/wiki/Journal}
+
+    This adds commands `:Neorg journal {today,tomorrow,yesterday}`,
+    which opens norg file with the appropriate date as name.
+    Also, take a look at {https://github.com/nvim-neorg/neorg/wiki/Calendar}[`core.ui.calendar`]
+    to add `:Neorg journal custom` command to choose a date with a calendar UI.
+
+    Great for diary :)
+
+*** `core.keybinds`
+    - {https://github.com/nvim-neorg/neorg/wiki/User-Keybinds}
+
+    To register `norg` file specific keybinds, read this section:
+    {https://github.com/nvim-neorg/neorg/wiki/User-Keybinds#setting-up-a-keybind-hook}[Neorg - Wiki - User-Keybinds - Setting Up a Keybind Hook].
+
+    The default keybinds are listed {https://github.com/nvim-neorg/neorg/blob/main/lua/neorg/modules/core/keybinds/keybinds.lua}[here].
+
+*** `core.export`
+    - {https://github.com/nvim-neorg/neorg/wiki/Exporting-Files}
+
+    You will want {https://github.com/nvim-neorg/neorg/wiki/Markdown-Export}[`core.export.markdown`] as well
+    to export your files to markdown format.
+
+    Read {:$/doc/40-export-import:** Export / Import} section for instructions for other filetypes in detail.
+
+*** `core.summary`
+    - {https://github.com/nvim-neorg/neorg/wiki/Summary}
+
+    Use `:Neorg generate-workspace-summary` to generate a summary of the entire
+    workspace with links to each respective entry.
+
+    It seems that it has some bugs that are being worked on.
+    - ✅ -{https://github.com/nvim-neorg/neorg/issues/1108}-
+    - {https://github.com/nvim-neorg/neorg/issues/1071}
+
+*** `core.tangle`
+    - {https://github.com/nvim-neorg/neorg/wiki/Tangling}
+
+    Use `:Neorg tangle current-file` to export the code blocks in the current file into another file.
+
+    Basics are listed below, but you've got more options to control the output.
+    See the {https://github.com/nvim-neorg/neorg/wiki/Tangling#usage-tutorial}[official wiki] for more information.
+
+**** Tangle each code block.
+     |example
+     #tangle init.lua
+     @code lua
+     -- This will be tangled to init.lua
+     print("Hello from init.lua!")
+     @end
+     |end
+
+**** Tangle entire document.
+     Specify output file inside `@document.meta`.
+     - Want to export to multiple files? => {https://github.com/nvim-neorg/neorg/wiki/Tangling#global-tangling-for-multiple-files}[More complex options.]
+     |example
+     @document.meta
+     tangle: ./init.lua
+     @end
+
+     @code lua
+     -- This will be tangled to init.lua
+     print("Hello from init.lua!")
+     @end
+
+     #tangle.none
+     @code lua
+     -- Ignore this code block
+     print("Not tangled.")
+     @end
+     |end
+
+**** Automatically tangle current file on save using `autocmd`.
+     @code lua
+     vim.api.nvim_create_autocmd("BufWritePost", {
+       pattern = "*.norg",
+       command = "Neorg tangle current-file",
+     })
+     @end
+
+*** `core.looking-glass`
+    - {https://github.com/nvim-neorg/neorg/wiki/Looking-Glass}
+
+    Use `:Neorg keybind all core.looking-glass.magnify-code-block` to edit code blocks in an external buffer,
+    which allows LSPs and other language-specific tools to kick in.
+
+    !{https://user-images.githubusercontent.com/76052559/216782314-5d82907f-ea6c-44f9-9bd8-1675f1849358.gif}[looking-glass]
+
+** Your Own Module
+   If you want to create your own module for neorg, this video is very useful.
+   {https://www.youtube.com/watch?v=j4lTvIGRhmw&list=PLxpY86LRR3B0rtOBjXAsq1XnsOt4m4owu}[YouTube - Neorg Custom Modules]
+
+   Here's one external module I implemented: {https://github.com/pysan3/neorg-templates}[neorg-templates],
+   which adds support for template files with the power of `LuaSnip`.
+
+   Feel free to explorer the code.

@@ -1,0 +1,124 @@
+@document.meta
+title: 40. Export Import
+description: How to convert norg and other markup files.
+authors: takuto
+categories: doc
+created: 2024-03-12T00:16:43+0900
+updated: 2024-03-12T05:31:55+0900
+version: 1.1.1
+weight: 40
+@end
+
+* How to Convert Norg and Other Markup Files
+
+** Export / Import
+   You can convert your `norg` notes from / to different formats.
+   You've got mainly three options to export and one to import.
+   For exporting, I find {*** Export: `norg-pandoc`} the most stable at the moment (2023-11-05)
+   but {*** Export: `norganic + pandoc + Norg.jl`} works pretty well as well.
+
+*** Builtin Export Module
+    `:Neorg export to-file foo.md` -> Exports to `foo.md` in markdown format.
+
+    This only supports markdown and the conversion is not very reliable.
+    However, you can use this as a neovim command, so it's the easiest among others.
+
+    This is a function to export to `suffix` with the same dir and name of current file.
+    @code lua
+    local export_file = function(suffix, open_preview)
+      local dst = vim.fn.fnamemodify(vim.fn.expand("%"), ":~:.:r") .. suffix -- same name but with suffix
+      vim.cmd(string.format([[Neorg export to-file %s]], string.gsub(dst, " ", [[\ ]])))
+      vim.schedule(function()
+        vim.cmd.edit(dst)
+        if suffix == ".md" and open_preview then
+          vim.cmd([[MarkdownPreview]]) -- https://github.com/iamcco/markdown-preview.nvim
+        end
+      end)
+    end
+    -- export_file(".md", true)
+    @end
+
+*** Export: `norganic + pandoc + Norg.jl`
+    {https://github.com/Klafyvel/Norg.jl/}[`Norg.jl`] is a project to parse norg format file written in julia.
+    {https://github.com/klafyvel/norganic}[`norganic`] is a frontend of `Norg.jl` to use the tool from command line.
+
+    For installation document, please read norganic's {https://github.com/klafyvel/norganic}[README].
+
+    - Example usage:
+    -- Convert norg file to html file.
+    @code bash
+    $ norganic html --input /path/to/file.norg --output /path/to/file.html
+    @end
+    -- Convert norg file to arbitrary file using `pandoc`.
+    --- norganic can output specific json format that pandoc understands and can convert to any format of file.
+    --- Note that things might not work here and there.
+    @code bash
+    $ norganic json --input /path/to/file.norg | pandoc -f json -t <file type you want> /path/to/output.xxx
+    @end
+
+*** Export: `norg-pandoc`
+    {https://github.com/boltlessengineer/norg-pandoc}[`norg-pandoc`] is a plugin for pandoc to parse norg format written in lua.
+    A parser in directly added to pandoc, but you have to git clone and run pandoc inside `norg-pandoc`'s directory
+    (or add this dir to lua's runtime path I guess?), so it is kinda cumbersome to run.
+    @code bash
+    $ git clone https://github.com/boltlessengineer/norg-pandoc.git
+    $ cd norg-pandoc
+    $ pandoc -f init.lua -t gfm /path/to/file.norg -o /path/to/output.md
+    # gfm (GitHub flavored markdown)
+    @end
+
+    {/ ./norg_tutorial.md} is generated using this tool with a combination of
+    {https://github.com/pysan3/dotfiles/blob/main/static/remove_empty_lines_in_lists.py}[my custom script]
+    to remove unnecessary newlines when exporting to markdown at the moment.
+    @code bash
+    $ pandoc -f init.lua -t gfm /path/to/norg_tutorial.norg | python remove_empty_lines_in_lists.py > /path/to/norg_tutorial.md
+    @end
+
+*** Import: `pandoc + minorg`
+    {https://github.com/pysan3/minorg}[`minorg`] is a tool to convert pandoc json format to norg file.
+    Theoretically, it should be able to convert from all file formats that pandoc supports (and it's extensions).
+
+    Please install the tool via {https://github.com/pysan3/minorg/releases}[minorg - Releases]
+
+    - Example usage:
+    -- Convert from markdown.
+    @code bash
+    $ pandoc -f markdown -t json /path/to/input/file.md | minorg generate -o /path/to/output.norg
+    @end
+    -- Convert Obsidian files.
+    --- Obsidian markdown flavor is a bit out of the standards and pandoc fails to parse it correctly.
+    --- I've implemented some workarounds specifically for obsidian style markdowns.
+    @code bash
+    $ pandoc -f markdown -f json /path/to/obsidian/file.md | minorg generate -o /path/to/output.norg --isObsidian --workRootDir=/path/to/workspace
+    @end
+    - For more usage examples (for example convert whole dir recursively), please read the {https://github.com/pysan3/minorg}[README].
+    - BTW, I'm the author of this cli tool, so if you have any problem, don't hesitate to send me an issue or feature request.
+
+*** Future: tree-sitter v3 parser
+    The tree-sitter parser for norg format version 3 is being worked at the moment.
+    I've not been able to follow the development closely but I heard that it might work if you compile locally at the moment (2023-11-06).
+
+    After this parser is complete, we should be able to write a working importer / exporter with the output of the parser
+    to plug into pandoc to have a reliable result.
+
+** Image Support
+   Image support in norg file is partially done, partially not.
+
+   The syntax is like below and the second format is currently discussed for inline images.
+   |example
+   %preferred image syntax, image.nvim supports this out of the box%
+   .image /path/to/image.png
+
+   %inline image syntax being discussed. No real implementation or parser supports this yet%
+   {url}[alt text](image)
+   {/ /path/to/img.png}[alt text](image)
+   |end
+
+   Parser or especially the {*** Builtin Export Module} does not fully support this.
+   Read {:$/doc/misc-and-tips:** Embed Images} if you want a workaround to have a working markdown export now.
+
+*** Visualization
+    {https://github.com/3rd/image.nvim}[`image.nvim`] is an awesome plugin that can inject the images inside the neovim buffer
+    if you use /kitty-graphics-protocol/ compatible terminal.
+
+    {https://github.com/nvim-neorg/neorg/issues/971#issuecomment-1620775558}[Working example GIF].

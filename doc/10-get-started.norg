@@ -1,0 +1,84 @@
+@document.meta
+title: 10. Get Started
+description: How to get started, with a kickstart config you can copy-paste.
+authors: takuto
+categories: doc
+created: 2024-03-12T00:14:25+0900
+updated: 2024-03-12T07:22:29+0900
+version: 1.1.1
+weight: 10
+@end
+
+* How to Get Started
+
+  The current implementations of `norg` format is mostly done with the {https://github.com/nvim-neorg/neorg/}[Neorg] plugin.
+
+** Installation Guide
+   Read this section. {https://github.com/nvim-neorg/neorg/#-installationquickstart}[Installation / Quickstart]
+
+   - I'd recommend following the `Treesitter` section as well to install `tree-sitter-norg` spec.
+   -- `run = ":Neorg sync-parsers",`
+   - *Mac Users*: ensure that the CC environment variable points to a compiler that has C++14 support.
+   -- Details written in github README.
+   -- {https://github.com/nvim-neorg/tree-sitter-norg/issues/7#issuecomment-1291508121}[Issue and How to solve]
+
+** Kickstart Config
+   Here is my basic config. I'll explain about `modules` in {:$/doc/30-modules:* Modules}.
+
+   @code lua
+   -- lazy.nvim spec
+   local M = {
+     "nvim-neorg/neorg",
+     ft = "norg",
+     dependencies = {
+       "nvim-treesitter/nvim-treesitter",
+       "nvim-treesitter/nvim-treesitter-textobjects",
+       "nvim-cmp",
+       "nvim-lua/plenary.nvim",
+     },
+     build = ":Neorg sync-parsers",
+     cmd = "Neorg",
+   }
+   local modules = {
+     ["core.defaults"] = {},
+     ["core.completion"] = { config = { engine = "nvim-cmp", name = "[Norg]" } },
+     ["core.integrations.nvim-cmp"] = {},
+     ["core.concealer"] = { config = { icon_preset = "diamond" } },
+     ["core.keybinds"] = {
+       -- https://github.com/nvim-neorg/neorg/blob/main/lua/neorg/modules/core/keybinds/keybinds.lua
+       config = {
+         default_keybinds = true,
+         neorg_leader = "<Leader><Leader>",
+       },
+     },
+     ["core.dirman"] = {
+       config = {
+         workspaces = {
+           Notes = "~/Nextcloud/Notes",
+           Work = "~/Nextcloud/Work",
+         }
+       }
+     },
+   }
+   M.opts = {
+     load = modules,
+   }
+   return M
+   @end
+
+   If you still have problems setting up `neorg`, `@d-r-a-b` explains more thoroughly in
+   {https://gist.github.com/d-r-a-b/3af7083a018be15e6c1d1d2c5317e9c7}[Understanding Neorg dependencies].
+   I'd really recommend this as well.
+
+*** `core.dirman`
+    This module manages what are called /workspaces/.
+
+    You can define multiple workspaces at `config["core.dirman"].config.workspaces`, and open with
+    command `:Neorg workspace <name-of-workspace>`.
+    This command opens `/path/to/workspace/index.norg` which is like the entry point file.
+
+    Norg files inside a workspace can be linked with `{:$<name-of-workspace>/path/to/file:}`.
+    So for example, inside workspace `Notes = "~/Nextcloud/Notes"`,
+    `~/Nextcloud/Notes/journal/2023-04-16.norg` would be `{:$Notes/journal/2023-04-16:}`.
+    Or, it can be abbreviated to `$/` when referring from files in the same workspace.
+    More info in {:$/doc/20-start-writing:* Links} section.

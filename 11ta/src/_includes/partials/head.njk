@@ -1,0 +1,98 @@
+{# set absolutePageURL to use later in  canonical and og URLs #}
+{%- set absolutePageUrl -%}{{ page.url | url | absoluteUrl(build.url) }}{%- endset -%}
+{# set image paths here so user/editor doesn't have to deal with full paths #}
+{%- set ogImage -%}
+{% if seo.image %}
+  /assets/images/{{ seo.image }}
+{% else %}
+  {{ meta.siteImage }}
+{% endif %}
+{%- endset -%}
+{#- General #}
+<meta name="author" content="{{ author or meta.authorName }}" />
+<meta name="description" content="{{ seo.description or excerpt or meta.siteDescription }}" />
+<link rel="canonical" href="{{ absolutePageUrl }}" />
+{#- Open Graph #}
+<meta property="og:site_name" content="{{ meta.title }}" />
+<meta property="og:title" content="{{ seo.title or title }} | {{ meta.siteName }}" />
+<meta property="og:description" content="{{ seo.description or excerpt or meta.siteDescription }}" />
+<meta property="og:url" content="{{ absolutePageUrl }}" />
+<meta property="og:locale" content="{{ meta.locale }}" />
+<meta property="og:image" content="{{ ogImage | url | absoluteUrl(build.url) }}" />
+{#- Twitter Card #}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="{{ meta.twitterSite }}" />
+<meta name="twitter:creator" content="{{ meta.twitterCreator }}" />
+<meta name="twitter:title" content="{{ seo.title or title }} | {{ meta.siteName }}" />
+<meta name="twitter:description" content="{{ seo.description or excerpt or meta.siteDescription }}" />
+{#- Favicon #}
+<link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/images/favicon/apple-touch-icon.png' | url }}">
+<link rel="icon" type="image/png" href="{{ '/assets/images/favicon/favicon-32x32.png' | url }}" sizes="32x32">
+<link rel="icon" type="image/png" href="{{ '/assets/images/favicon/favicon-16x16.png' | url }}" sizes="16x16">
+{#- RSS Feed #}
+<link type="application/atom+xml" rel="alternate" href="{{ build.url }}/feed.xml" title="{{ meta.siteName }} XML Feed">
+<script>
+var nightwind = {
+  beforeTransition: () => {
+    const doc = document.documentElement;
+    const onTransitionDone = () => {
+      doc.classList.remove('nightwind');
+      doc.removeEventListener('transitionend', onTransitionDone);
+    }
+    doc.addEventListener('transitionend', onTransitionDone);
+    if (!doc.classList.contains('nightwind')) {
+      doc.classList.add('nightwind');
+    }
+  },
+
+  toggle: () => {
+    nightwind.beforeTransition();
+    const dark_mode_btn = document.getElementById("dark_mode_btn");
+    const light_mode_btn = document.getElementById("light_mode_btn");
+    if (!document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.add('dark');
+      light_mode_btn.classList.remove("hidden");
+      dark_mode_btn.classList.add("hidden");
+      window.localStorage.setItem('nightwind-mode', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      dark_mode_btn.classList.remove("hidden");
+      light_mode_btn.classList.add("hidden");
+      window.localStorage.setItem('nightwind-mode', 'light');
+    }
+  },
+ }
+</script>
+<script>
+function getInitialColorMode() {
+  const persistedColorPreference = window.localStorage.getItem('nightwind-mode');
+  const hasPersistedPreference = typeof persistedColorPreference === 'string';
+  if (hasPersistedPreference) {
+    return persistedColorPreference;
+  }
+  const mql = window.matchMedia('(prefers-color-scheme: dark)');
+  const hasMediaQueryPreference = typeof mql.matches === 'boolean';
+  if (hasMediaQueryPreference) {
+    return mql.matches ? 'dark' : 'light';
+  }
+  return 'light';
+}
+var mode = getInitialColorMode()
+if (mode == 'light') {
+  document.documentElement.classList.remove("dark");
+} else {
+  document.documentElement.classList.add("dark");
+}
+
+window.addEventListener("DOMContentLoaded", function () {
+  const dark_mode_btn = document.getElementById("dark_mode_btn");
+  const light_mode_btn = document.getElementById("light_mode_btn");
+  if (mode == 'light') {
+    document.documentElement.classList.remove("dark");
+    dark_mode_btn.classList.remove("hidden");
+  } else {
+    document.documentElement.classList.add("dark");
+    light_mode_btn.classList.remove("hidden");
+  }
+})
+</script>

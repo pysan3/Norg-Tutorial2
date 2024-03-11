@@ -1,0 +1,66 @@
+@document.meta
+title: Misc and Tips
+description: Tips and tricks to work with norg format in real world.
+authors: takuto
+categories: doc
+created: 2024-03-12T00:20:17+0900
+updated: 2024-03-12T05:31:55+0900
+version: 1.1.1
+weight: 100
+@end
+
+* Tips
+
+** Embed Images
+   *This section is old.* Read {:$/doc/40-export-import:** Image Support} for new information.
+   -As far as I know, there are *NO* specifications about how to embed / link to an image.-
+
+   Update: 2023-10-19.
+   - Spec for image added: {https://github.com/nvim-neorg/norg-specs/issues/14}.
+   |example
+   .image /path/to/image.png
+   |end
+
+   - There are also some attempts to add image preview support thanks to {https://github.com/3rd/image.nvim}[image.nvim].
+   -- {https://github.com/nvim-neorg/neorg/issues/971}
+   - Markdown export and treesitter parsing is not yet /fully/ implemented,
+     so I'd suggest using the old workaround described below for now.
+
+*** OLD: Discussions
+    - {https://github.com/nvim-neorg/neorg/discussions/768}[Is there any way to insert a image just like kitty icat does #768]
+    - {https://github.com/nvim-neorg/neorg/discussions/791}[render.nvim #791]
+    ---
+
+*** OLD: Workaround
+
+    As a workaround, funny enough, you can prepend a link with `!` like `!{path}[name]` to link to an image,
+    which will be correctly converted to image tag when exported to markdown files.
+    (Of course this only works with markdown and I hope this will not become the correct way.)
+  |example
+    !{https://user-images.githubusercontent.com/76052559/150838408-1a021d7b-1891-4cab-b16e-6b755e741e87.png}[Norg format]
+  |end
+    Example:
+    !{https://user-images.githubusercontent.com/76052559/150838408-1a021d7b-1891-4cab-b16e-6b755e741e87.png}[Norg format]
+
+** Sync with Git, Nextcloud, etc
+   *BACKUP YOUR NOTES*
+
+*** Nextcloud, Edit on Your Phone
+    If you use selfhosted Nextcloud, you can edit your `norg` notes from your phone.
+
+**** After Logging In
+     ~ Install {https://apps.nextcloud.com/apps/notes}[Notes app]
+     ~ Go to {https://nextcloud.your.domain/apps/notes}
+     ~ Go down to `Notes settings`
+     ~ Change `File extension for new notes`
+     ~~ `User defined` -> `.norg`
+
+**** On Your Phone
+     ~ Access page with safari. ,I'm sorry but I use iPhone...,
+     ~~ Shoud work on other phones as well tho.
+     ~ Go to {https://nextcloud.your.domain/apps/notes}
+     ~ Press `share` to `Add page to home`.
+     ~ You have a new app that jumps directly to notes
+
+**** Notes
+     - Might not work if you have {https://github.com/nextcloud/text}[Text] app installed

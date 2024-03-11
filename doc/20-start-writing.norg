@@ -1,0 +1,107 @@
+@document.meta
+title: 20. Start Writing
+description: How to write your notes.
+authors: takuto
+categories:
+created: 2024-03-12T00:15:03+0900
+updated: 2024-03-12T07:23:19+0900
+version: 1.1.1
+weight: 20
+@end
+
+* How to Write Your Notes
+** Basics of Modules
+   There is a config option `config.load = {}` to define modules you want to use.
+
+   ,I decomposed that into a local var `modules` in above code for simplicity tho.,
+
+   More information about modules in {:$/doc/30-modules:* Modules} section.
+   I'd recommend just simply adding the ones already stated in {:$/doc/10-get-started:** Kickstart Config}.
+
+** How to Write Notes
+   Below text is a sample note which explains about the norg syntax.
+
+   Run `:Neorg toggle-concealer` to see the raw text.
+
+* Heading 1
+  - Spec: {:$/1.0-specification:** Structural Detached Modifiers}
+  -- This links to a local copy of {https://github.com/nvim-neorg/norg-specs/blob/main/1.0-specification.norg}.
+  -- Read {https://github.com/pysan3/Norg-Tutorial#before-you-start}[Before you start] and download these files.
+
+  Normal text here.
+  Single new line will be ignored.
+
+  Double new lines mean a new paragraph.
+
+** Heading 2
+   Indentation of normal text is advised to align with the start of the heading name.
+   See? The indentation of this text is different from the ones in {* Heading 1}.
+
+   Oh, BTW that's how you create in-document links. Literal heading name wrapped in `{}`.
+   Press `<Enter>` on the link to jump to the definition.
+   (case, space *in*-sensitive, punctuation *sensitive*).
+   More about links in {* links}
+   ---
+
+  With `---`, you can decrease the heading level. This text is inside {* Heading 1} again.
+
+  - Bullet List
+  -- Spec: {:$/1.0-specification:*** Unordered Lists}
+  -- Second level bullet is with `--` and not an indented `-`.
+  --- Third level
+  -- Second level
+  - In insert mode, press `<M-CR>` to create a new bullet.
+  -- Press `<C-t>`, `<C-d>` to increase, decrease the level.
+  -- More info can be found {https://github.com/nvim-neorg/neorg/wiki/Indent}[Wiki - Indent] or {https://github.com/nvim-neorg/neorg/blob/main/lua/neorg/modules/core/keybinds/keybinds.lua}[Raw code].
+
+  ~ Numbered List
+  ~~ Spec: {:$/1.0-specification:*** Ordered Lists}
+  ~~ It's `~`, not `1.` (Tho the conceal makes it look like that)
+  -- Can be mixed with bullets as well (not in markdown tho).
+  ~ Second
+
+  > Quotes
+  >> Spec: {:$/1.0-specification:*** Quotes}
+  >> Quote level 2
+
+  - You can use {:$/1.0-specification:*** TODO Status Extension}[TODO lists] in combination with these lists.
+  -- I highly suggest reading this section as well.
+
+* Links
+  - Spec: {:$/1.0-specification:** Link Location}
+
+  There are so so many types of useful links in `norg`.
+  You can also press `<Enter>` on all links to open the appropriate application.
+  (e.g. urls are opened in the browser.)
+
+  Again, `Vhyrro` does a great job explaining about links in his video,
+  {https://youtu.be/Bi9JiW5nSig?t=17m44s}[From No Org to Neorg #2: 17:44~] so go ahead and watch that video.
+
+** Links Examples
+   - URL: `{https://xxx.example.com}`
+   -- URL with name: {https://github.com/nvim-neorg/neorg/}[Neorg GitHub]
+   - Norg files
+   -- Relative to current file: `{:foo/bar:}` -> `foo/bar.norg`
+   -- Absolute path: `{:/tmp/foo/bar:}` -> `/tmp/foo/bar.norg`. (Also works with `~/` = `$HOME/`)
+   -- Relative to current workspace: `{:$/foo/bar:}` -> `~/Norg/Notes/foo/bar.norg`
+   -- Relative to different workspace: `{:$work/foo/bar:}` -> `~/Norg/work/foo/bar.norg`
+   - Usual files: `{/ /path/to/file}`
+   - Headings: {* Heading 1}
+   -- Any level heading: {# Heading 2}
+
+   *AND YOU CAN COMBINE THEM*
+   - `Heading 1` of `foo/bar.norg`: {:foo/bar:* Heading 1}
+   - Line numbers: {:foo/bar:4}
+
+* Attached Modifiers
+  - \*bold\*: *bold*
+  - \/italic\/: /italic/
+  - \_underline\_: _underline_
+  - \-strike-through\-: -strike-through-
+  - \!spoiler\!: !spoiler!
+  - \^superscript\^: ^superscript^ (cannot be nested into `subscript`)
+  - \,subscript\,: ,subscript, (cannot be nested into `superscript`)
+  - \`inline code\`: `inline code` (disables any nested markup - verbatim)
+  - \%{** Null Modifier}[null modifier]\%: %null modifier%
+  - \$inline math\$: $f(x) = y$ (verbatim)
+  - \&variable\&: &variable& (verbatim)

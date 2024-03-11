@@ -1,0 +1,151 @@
+@document.meta
+title: 50. Syntax Explained
+description: More explanation on norg syntax.
+authors: takuto
+categories:
+created: 2024-03-12T00:18:37+0900
+updated: 2024-03-12T05:31:55+0900
+version: 1.1.1
+weight: 50
+@end
+
+* More Explanation on Norg Syntax
+
+** Table Syntax
+   The table syntax is one of the most powerfull, but really tricky thing in norg's specification.
+   I will try my best to explain.
+   Even if it's hard to comprehend, skim through til the {*** Table Format Examples} section and you might get the hang of it.
+
+   There are two syntax to define a table, one easy but limited and one that is very extensible.
+
+*** Markdown Wrapper
+    This format is very easy. It is basically the same as markdown table format wrapped in `@table - @end`.
+
+    One pro is that it should work with some markdown exporter at the momemt.
+    |example
+    @table
+    | Head a | Head b | Head c |
+    | -      | -      | -      |
+    | Cell 1 | Cell 2 | Cell 3 |
+    | Cell 4 | Cell 5 | Cell 6 |
+    @end
+    |end
+
+*** Rich Table Format
+    This table format has infinite size table and you can specify the cell positions with movement (relative) commands.
+
+    Here are the three ways to write a cell. It consists of `: <movement> : cell content`.
+    |example
+    %basic format%
+    : .
+      cell content
+
+    %shorthand syntax when content fits in single line%
+    : . : cell content
+
+    %multi line content syntax. you also need the closing :: below%
+    :: .
+      - cell
+      - content
+    ::
+    |end
+
+    Now let's talk about the movements. These should go into the `.` part in the above example.
+    In this example, `A1` means first row, first column, `C2` means *second row (2)*, *third column (C)*.
+    Look at `MS Excel` for more visual explanation.
+    - `.`: Top left (A1) of the table.
+    - `>` / `<`: Go one left / right.
+    -- You can prefix number to move multiple times. `3>` moves three right.
+    - `^` / `v`: Go one up / down. Also combine with numbers.
+    - `_`: Move to leftmost column on the next row. (If on `D1` and `_` will go to `A2`)
+    - `/`: Like `_` but vertically. Move one right and to the top. Imagine an upper-right arrow (↗️).
+
+    One special case is that when you go `<` on `A?` (left most column), it will wrap around and go to
+    the cell one row above and all the way to the right (that has content). (`A2` -> `<` -> `X1`)
+
+    Another option other than relative movement is to specify absolute cell position.
+    - `: A1 : cell content`: Position `A1`.
+    - `: B1 : second cell`: Obviously cell next to `A1`.
+    - `: A1-A4 : multi row cell`: You can specify a multi row / column cell with this format.
+
+    %Norg also has the concept of `&variable&` which holds some value, controllable with {# macros}%
+
+**** Alignments
+     You can align the cell content with `+align right` above the cell row.
+     Note that these are still *very work in progress* and neither the exporter nor the parser understand it,
+     and /might even change in the future/.
+     Other variances are...
+     - `+align left`: align a single cell
+     - `#align center`: align all cells to the center after this line
+     - `#align.columns A right`: align all cells in `A` column
+
+*** Table Format Examples
+    Let's wrap our heads around with some examples. The following tables represent the same thing.
+
+    |example
+    @table
+    (This is not a valid table, just added the wrapper to avoid parser errors)
+    | Head a    |    Head b |   Head c  |
+    | --------- | --------- | --------- |
+    | multi     | multi col cell        |
+    | row       | --------- | --------- |
+    | cell      |    Cell 5 |    Cell 6 |
+    | --------- | --------- | --------- |
+    @end
+
+    #align left
+    : . : Head a
+    +align right
+    : > : Head b
+    +align center
+    : > : Head c
+    : A2-A3 : multi row cell
+    : B2-C2 : multi col cell
+    #align right
+    : _> : Cell 5
+    : > : Cell 6
+    |end
+
+    The following mimics table in {*** Markdown Wrapper}.
+    Although you can totally express this table with only `. > _`, I purposely used different notations as well.
+    BTW, there are no ways to express `<th>` cells at the moment. The format is being discussed at {:$/doc/60-social-norg:** Discord} right now (2023-11-06).
+    |example
+    : . : Head a
+    : B1 : Head b
+    : C1
+      Head c
+    : _ : Cell 1
+    : 5>4<
+      Cell 2
+    :: >
+      Cell 3
+    ::
+    : >>>_ : Cell 4
+    : /2v : Cell 5
+    : _2>^ : Cell 6
+    |end
+
+** Macros
+   Macros in norg format starts with one of (`#`, `@`, `.`, `|`) and can invoke a function written in
+   {https://janet-lang.org/}[Janet Langauge].
+   You've already seen this with `#align`, `@table`, `.image`, `|example` and so on.
+   The spec hasn't matured yet but we are working on it steadily.
+   We will see things like `+color:red` and many more interesting ones that connects to database soon -I mean pretty in long term...-.
+
+*** Attached Modifier Extensions (WIP)
+    Macros or labels attached on attached modifiers.
+
+    Best example is the below where `(lang:norg)` extends the inline code block (backticks).
+    |example
+    - `* Heading`(lang:norg)
+    |end
+
+*** Detached Modifier Extensions (WIP)
+    Kind of like a tag attached to headings, bullet points and some other stuffs.
+
+    Best example is the todo items where `- (x) item` means that this bullet point has attribute /TODO item/ and /IS DONE/.
+    These modifiers can be chained together with a pipe (`|`).
+    Below example means a heading that is /TODO item/ and /PENDING/ and /PRIORITY A (A is highest)/.
+    |example
+    * (-|# A) Heading 1
+    |end
